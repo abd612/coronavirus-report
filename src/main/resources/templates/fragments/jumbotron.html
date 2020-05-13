@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        ...
+    </head>
+    <body>
+        <div th:fragment="jumbotron">
+            <div class="jumbotron">
+                <h1 class="display-4">
+                    <small>Total Confirmed Cases Worldwide: </small><strong><strong><span th:text="${totalConfirmed}">-</span></strong></strong>
+                    <hr class="mt-4 mb-2">
+                    <small><small class="text-muted" style="overflow: hidden;text-overflow: ellipsis;white-space: nowrap;text-align: justify;text-justify: inter-word;">
+                        Deaths: <strong><span th:text="${totalDeaths}">-</span></strong>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+                        Recovered: <strong><span th:text="${totalRecovered}">-</span></strong>&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+                        Active: <strong><span th:text="${totalActive}">-</span></strong>
+                    </small></small>
+                </h1>
+            </div>
+        </div>
+    </body>
+</html>
