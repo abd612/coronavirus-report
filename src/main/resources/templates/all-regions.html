@@ -10,11 +10,8 @@
 
     <body>
         <div th:replace="fragments/navbar :: navbar"></div>
-
         <div class="container">
-            <br>
-            <h1>Data for All Regions</h1>
-            <br>
+            <br><h1>Data for All Regions</h1><br>
             <table class="table">
                 <tr>
                     <th>Region</th>
@@ -31,7 +28,6 @@
                     <td th:text="${dailyReportEntry.active}">-</td>
                 </tr>
             </table>
-
         </div>
     </body>
 

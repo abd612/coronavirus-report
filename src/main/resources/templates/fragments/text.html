@@ -1,19 +1,21 @@
 <!DOCTYPE html>
+
 <html>
+
     <head>
         ...
     </head>
+
     <body>
         <div th:fragment="text">
-            <br>
-            <h1>Coronavirus Report</h1><hr/>
+            <br><h1>Coronavirus Report</h1><hr/>
             <p>
                 Latest Coronavirus (COVID-19) Report<br>
-                Updated daily at <span th:text="${dailyUpdateTime}">00:00 UTC</span>&ensp;-&ensp;
-                Last updated on <span th:text="${lastUpdatedTime}">00:00 UTC</span><br>
+                Updated daily at <span th:text="${dailyUpdateTime}">00:00 UTC</span>&nbsp;&nbsp;-&nbsp;&nbsp;Last updated on <span th:text="${lastUpdatedTime}">00:00 UTC</span><br>
                 Data Source: <a target="_blank" rel="noopener noreferrer" th:href="@{${dataSourceLink}}">CSSE - JHU</a><br>
                 Site Developer: <a target="_blank" rel="noopener noreferrer" th:href="@{${creditLink}}">@abd612</a><br>
             </p><hr/>
         </div>
     </body>
+
 </html>

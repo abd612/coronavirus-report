@@ -7,12 +7,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
@@ -26,29 +30,58 @@ public class DailyReportService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private List<DailyReportEntry> dailyReportEntries = new ArrayList<>();
     private List<DailyReportEntry> aggregatedDailyReportEntries = new ArrayList<>();
-    private String lastUpdatedTime;
+    private String lastUpdatedTime = "00:00 (UTC)";
 
+    @Value("${useTestData}")
+    private boolean useTestData;
+    @Value("${testDataPath}")
+    private String testDataPath;
     @Value("${dailyReportUrlPrefix}")
     private String dailyReportUrlPrefix;
     @Value("${pastDaysToCheck}")
     private Integer pastDaysToCheck;
     @Value("${retriesPerDay}")
     private Integer retriesPerDay;
+    @Value("${connectTimeout}")
+    private Integer connectTimeout;
+    @Value("${readTimeout}")
+    private Integer readTimeout;
 
     @PostConstruct
     @Scheduled(cron = "${scheduledCron}", zone = "${scheduledZone}")
     public void getDailyReportData() {
-        String rawData = getLatestRawData();
+        String data;
 
-        try {
-            parseData(rawData);
+        if (useTestData) {
+            data = getTestData();
+        } else {
+            data = getLatestData();
+        }
+
+        parseData(data);
+    }
+
+    private String getTestData() {
+        File file = new File(testDataPath);
+        StringBuilder stringBuilder;
+
+        try (Scanner scanner = new Scanner(file)) {
+            stringBuilder = new StringBuilder();
+            while (scanner.hasNextLine()) {
+                stringBuilder.append(scanner.nextLine()).append(System.getProperty("line.separator"));
+            }
+            return stringBuilder.toString();
+        } catch (FileNotFoundException e) {
+            logger.error("Error finding file - Error Message: {}", e.getMessage());
+            return null;
         } catch (Exception e) {
-            logger.error("Error parsing latest data");
+            logger.error("Error reading file - Error Message: {}", e.getMessage());
+            return null;
         }
     }
 
-    private String getLatestRawData() {
-        RestTemplate restTemplate = new RestTemplate();
+    private String getLatestData() {
+        RestTemplate restTemplate = new RestTemplate(getClientHttpRequestFactory());
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -64,12 +97,16 @@ public class DailyReportService {
                     ResponseEntity<String> response = restTemplate.getForEntity(dateUrl, String.class);
                     if (response.getStatusCodeValue() == 200) {
                         lastUpdatedTime = String.format("%s at %s (UTC)", dateFormat.format(new Date()), timeFormat.format(new Date()));
-                        logger.info("Last updated on {}", lastUpdatedTime);
                         logger.info("Successfully fetched data for {} (UTC)", dateString);
+                        logger.info("Last updated on {}", lastUpdatedTime);
                         return response.getBody();
                     }
                 } catch (RestClientResponseException e) {
-                    logger.error("Error fetching data for {} (UTC) - Error code: {}", dateString, e.getRawStatusCode());
+                    logger.error("HTTP error fetching data for {} (UTC) - Error Code: {}", dateString, e.getRawStatusCode());
+                } catch (ResourceAccessException e) {
+                    logger.error("Timeout error fetching data for {} (UTC) - Error Message: {}", dateString, e.getMessage());
+                } catch (Exception e) {
+                    logger.error("Error fetching data for {} (UTC) - Error Message: {}", dateString, e.getMessage());
                 }
             }
         }
@@ -77,24 +114,35 @@ public class DailyReportService {
         return null;
     }
 
-    private void parseData(String rawData) throws IOException {
+    private SimpleClientHttpRequestFactory getClientHttpRequestFactory() {
+        SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
+        clientHttpRequestFactory.setConnectTimeout(connectTimeout);
+        clientHttpRequestFactory.setReadTimeout(readTimeout);
+        return clientHttpRequestFactory;
+    }
+
+    private void parseData(String rawData) {
         List<DailyReportEntry> newReportEntries = new ArrayList<>();
         StringReader reader = new StringReader(rawData);
-        Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(reader);
 
-        for (CSVRecord record : records) {
-            String regionKey = record.get("Combined_Key");
-            String country = record.get("Country_Region");
-            Integer confirmed = Integer.parseInt(record.get("Confirmed"));
-            Integer deaths = Integer.parseInt(record.get("Deaths"));
-            Integer recovered = Integer.parseInt(record.get("Recovered"));
-            Integer active = Integer.parseInt(record.get("Active"));
-            DailyReportEntry dailyReportEntry = new DailyReportEntry(regionKey, country, confirmed, deaths, recovered, active);
-            newReportEntries.add(dailyReportEntry);
+        try {
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT.withFirstRecordAsHeader().parse(reader);
+            for (CSVRecord record : records) {
+                String regionKey = record.get("Combined_Key");
+                String country = record.get("Country_Region");
+                Integer confirmed = Integer.parseInt(record.get("Confirmed"));
+                Integer deaths = Integer.parseInt(record.get("Deaths"));
+                Integer recovered = Integer.parseInt(record.get("Recovered"));
+                Integer active = Integer.parseInt(record.get("Active"));
+                DailyReportEntry dailyReportEntry = new DailyReportEntry(regionKey, country, confirmed, deaths, recovered, active);
+                newReportEntries.add(dailyReportEntry);
+            }
+
+            dailyReportEntries = newReportEntries;
+            setAggregatedDailyReportEntries();
+        } catch (IOException e) {
+            logger.error("Error parsing data - Error Message: {}", e.getMessage());
         }
-
-        dailyReportEntries = newReportEntries;
-        setAggregatedDailyReportEntries();
     }
 
     public String getLastUpdatedTime() {

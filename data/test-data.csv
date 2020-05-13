@@ -1,0 +1,7 @@
+FIPS,Admin2,Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Deaths,Recovered,Active,Combined_Key
+6037,Los Angeles,California,US,2020-05-12 03:32:27,34.30828379,-118.2282411,32263,1570,0,30693,"Los Angeles, California, US"
+36061,New York City,New York,US,2020-05-12 03:32:27,40.76727260000001,-73.97152637,185357,20056,0,165301,"New York City, New York, US"
+,,,United Kingdom,2020-05-12 03:32:27,55.3781,-3.4360000000000004,223060,32065,0,190995,United Kingdom
+,,Ontario,Canada,2020-05-12 03:32:27,51.2538,-85.3232,21817,1788,0,20029,"Ontario, Canada"
+,,New South Wales,Australia,2020-05-12 03:32:27,-33.8688,151.2093,3053,44,2543,466,"New South Wales, Australia"
+,,,Pakistan,2020-05-12 03:32:27,30.3753,69.3451,32081,706,8555,22820,Pakistan

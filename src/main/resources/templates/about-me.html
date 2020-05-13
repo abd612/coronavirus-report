@@ -10,12 +10,9 @@
 
     <body>
         <div th:replace="fragments/navbar :: navbar"></div>
-
         <div class="container">
-            <br>
-            <h1>About Me</h1><hr/>
-            <br>
-            <img th:src="@{/images/profile-photo.jpg}" class="rounded float-left" alt="profile-photo" style="width:300px;height:300px;margin: 0px 50px 0px 0px">
+            <br><h1>About Me</h1><hr/><br>
+            <img th:src="@{/images/abd612-profile-photo.jpg}" class="rounded float-left" alt="profile-photo" style="width:300px;height:300px;margin: 0px 50px 0px 0px">
             <p align="justify">
                 Hi, my name is <strong>Muhammad Abdullah</strong>.
                 I am a back-end developer with expertise in Spring Boot, ASP.NET, Microsoft Azure and Azure DevOps.
@@ -25,9 +22,7 @@
                 I am currently working at a leading software company dealing with multiple Fortune 500 clients.<br><br>
                 Github: <a target="_blank" rel="noopener noreferrer" th:href="@{${creditLink}}">@abd612</a><br>
             </p>
-
         </div>
-
     </body>
 
 </html>
