@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Coronavirus Report - Error</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <div th:replace="fragments/navbar :: navbar"></div>
+        <div class="container">
+            <br><h1>Error - 404 Not Found</h1><hr/><br>
+            <img th:src="@{/images/404-image.png}" class="rounded float-left" alt="404 error" style="width:300px;margin: 0px 50px 0px 0px">
+            <p align="justify" style="font-size:130%;">
+                It seems you have wandered off into uncharted territory.<br>
+                The page you requested does not exist.<br><br>
+                <a class="btn btn-primary btn-lg" href="/" role="button">Take me back!</a>
+            </p>
+        </div>
+    </body>
+
+</html>

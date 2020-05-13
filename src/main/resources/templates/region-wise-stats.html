@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <title>Coronavirus Report - Region-Wise Stats</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    </head>
+
+    <body>
+        <div th:replace="fragments/navbar :: navbar"></div>
+        <div class="container">
+            <br><h1>Region-Wise Stats</h1><br>
+            <table class="table">
+                <tr>
+                    <th>Region</th>
+                    <th>Confirmed</th>
+                    <th>Deaths</th>
+                    <th>Recovered</th>
+                    <th>Active</th>
+                </tr>
+                <tr th:each="dailyReportEntry : ${dailyReportEntries}">
+                    <td th:text="${dailyReportEntry.regionKey}">nil</td>
+                    <td th:text="${dailyReportEntry.confirmed}">-</td>
+                    <td th:text="${dailyReportEntry.deaths}">-</td>
+                    <td th:text="${dailyReportEntry.recovered}">-</td>
+                    <td th:text="${dailyReportEntry.active}">-</td>
+                </tr>
+            </table>
+        </div>
+    </body>
+
+</html>

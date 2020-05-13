@@ -34,11 +34,18 @@ public class HomeController {
         return "home";
     }
 
-    @GetMapping("/all-regions")
-    public String allRegions(Model model) {
+    @GetMapping("/country-wise-stats")
+    public String countryWiseStats(Model model) {
+        model.addAttribute("aggregatedDailyReportEntries", dailyReportService.getAggregatedDailyReportEntries());
+
+        return "country-wise-stats";
+    }
+
+    @GetMapping("/region-wise-stats")
+    public String regionWiseStats(Model model) {
         model.addAttribute("dailyReportEntries", dailyReportService.getDailyReportEntries());
 
-        return "all-regions";
+        return "region-wise-stats";
     }
 
     @GetMapping("/about-me")
@@ -47,8 +54,8 @@ public class HomeController {
         return "about-me";
     }
 
-    @GetMapping("/test-nav")
-    public String testNav() {
-        return "test-nav";
+    @GetMapping("/error")
+    public String error() {
+        return "error";
     }
 }
