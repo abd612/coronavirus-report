@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        ...
+    </head>
+
+    <body>
+    <div th:fragment="cards-grid">
+        <br>
+        <div class="row">
+            <div class="col-md-1 mb-4">
+            </div>
+            <div class="col-md-5 mb-4">
+                <div class="card bg-warning text-white pl-3">
+                    <div class="card-body">
+                        <span style="font-size:150%">Confirmed:</span><br><h1 class="display-3"><strong><span th:text="${totalConfirmed}">-</span></strong></h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 mb-4">
+                <div class="card bg-danger text-white pl-3">
+                    <div class="card-body">
+                        <span style="font-size:150%">Deaths:</span><br><h1 class="display-3"><strong><span th:text="${totalDeaths}">-</span></strong></h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1 mb-4">
+            </div>
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-5">
+                <div class="card bg-success text-white pl-3">
+                    <div class="card-body">
+                        <span style="font-size:150%">Recovered:</span><br><h1 class="display-3"><strong><span th:text="${totalRecovered}">-</span></strong></h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card bg-primary text-white pl-3">
+                    <div class="card-body">
+                        <span style="font-size:150%">Active:</span><br><h1 class="display-3"><strong><span th:text="${totalActive}">-</span></strong></h1>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+        <br>
+    </div>
+    </body>
+</html>

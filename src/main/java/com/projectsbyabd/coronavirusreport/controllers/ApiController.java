@@ -89,4 +89,15 @@ public class ApiController {
     public List<String> listAllRegions() {
         return dailyReportService.getAllRegionKeys();
     }
+
+    @GetMapping("/ping")
+    public String ping() {
+        return "success";
+    }
+
+    @GetMapping("/updateData")
+    public String updateDate() {
+        dailyReportService.getDailyReportData();
+        return "updated";
+    }
 }

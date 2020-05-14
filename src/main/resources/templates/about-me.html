@@ -13,16 +13,17 @@
         <div class="container">
             <br><h1>About Me</h1><hr/><br>
             <img th:src="@{/images/abd612-profile-photo.jpg}" class="rounded float-left" alt="profile-photo" style="width:300px;height:300px;margin: 0px 50px 0px 0px">
-            <p align="justify" style="font-size:120%;">
+            <p align="justify" style="font-size:100%;">
                 Hi, my name is <strong>Muhammad Abdullah</strong>.
                 I am a back-end developer with expertise in Spring Boot, ASP.NET, Microsoft Azure and Azure DevOps.
                 I have high coding proficiency in Java, C#, Python and C.
                 I have worked extensively with the latest databases including MS SQL, MySQL, MongoDB and Azure Cosmos DB.
                 I also have vast experience in creating numerous microservices and REST APIs.
                 I am currently working at a leading software company dealing with multiple Fortune 500 clients.<br><br>
-                <a class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer" th:href="@{${creditLink}}" role="button">GitHub: @abd612</a>
-            </p>
+                <a class="btn btn-primary" target="_blank" rel="noopener noreferrer" th:href="@{${creditLink}}" role="button">GitHub: @abd612</a>
+            </p><br><br><br><br><br>
         </div>
+        <div th:replace="fragments/footer :: footer"></div>
     </body>
 
 </html>

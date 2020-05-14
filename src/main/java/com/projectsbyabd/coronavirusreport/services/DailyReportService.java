@@ -27,7 +27,9 @@ import java.util.stream.Collectors;
 @Service
 public class DailyReportService {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(DailyReportService.class);
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
     private List<DailyReportEntry> dailyReportEntries = new ArrayList<>();
     private List<DailyReportEntry> aggregatedDailyReportEntries = new ArrayList<>();
     private String lastUpdatedTime = "00:00 (UTC)";
@@ -59,6 +61,9 @@ public class DailyReportService {
         }
 
         parseData(data);
+
+        lastUpdatedTime = String.format("%s at %s (UTC)", dateFormat.format(new Date()), timeFormat.format(new Date()));
+        logger.info("Last updated on {}", lastUpdatedTime);
     }
 
     private String getTestData() {
@@ -70,6 +75,7 @@ public class DailyReportService {
             while (scanner.hasNextLine()) {
                 stringBuilder.append(scanner.nextLine()).append(System.getProperty("line.separator"));
             }
+            logger.info("Successfully read test data from file");
             return stringBuilder.toString();
         } catch (FileNotFoundException e) {
             logger.error("Error finding file - Error Message: {}", e.getMessage());
@@ -82,8 +88,6 @@ public class DailyReportService {
 
     private String getLatestData() {
         RestTemplate restTemplate = new RestTemplate(getClientHttpRequestFactory());
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
@@ -96,9 +100,7 @@ public class DailyReportService {
                 try {
                     ResponseEntity<String> response = restTemplate.getForEntity(dateUrl, String.class);
                     if (response.getStatusCodeValue() == 200) {
-                        lastUpdatedTime = String.format("%s at %s (UTC)", dateFormat.format(new Date()), timeFormat.format(new Date()));
                         logger.info("Successfully fetched data for {} (UTC)", dateString);
-                        logger.info("Last updated on {}", lastUpdatedTime);
                         return response.getBody();
                     }
                 } catch (RestClientResponseException e) {
