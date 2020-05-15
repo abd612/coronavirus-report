@@ -5,25 +5,64 @@
     <head>
         <title>Coronavirus Report - About Me</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"> </script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <style>
+            #page {
+                position: relative;
+                min-height: 100vh;
+            }
+
+            .container {
+                padding-bottom: 2.5rem;
+            }
+
+            #footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 2.5rem;
+            }
+
+            .rounded {
+                transition: all .2s ease-in-out;
+            }
+
+            .rounded:hover {
+                transform: scale(1.05);
+                -webkit-box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
+                -moz-box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
+                box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
+            }
+        </style>
     </head>
 
     <body>
-        <div th:replace="fragments/navbar :: navbar"></div>
-        <div class="container">
-            <br><h1>About Me</h1><hr/><br>
-            <img th:src="@{/images/abd612-profile-photo.jpg}" class="rounded float-left" alt="profile-photo" style="width:300px;height:300px;margin: 0px 50px 0px 0px">
-            <p align="justify" style="font-size:100%;">
-                Hi, my name is <strong>Muhammad Abdullah</strong>.
-                I am a back-end developer with expertise in Spring Boot, ASP.NET, Microsoft Azure and Azure DevOps.
-                I have high coding proficiency in Java, C#, Python and C.
-                I have worked extensively with the latest databases including MS SQL, MySQL, MongoDB and Azure Cosmos DB.
-                I also have vast experience in creating numerous microservices and REST APIs.
-                I am currently working at a leading software company dealing with multiple Fortune 500 clients.<br><br>
-                <a class="btn btn-primary" target="_blank" rel="noopener noreferrer" th:href="@{${creditLink}}" role="button">GitHub: @abd612</a>
-            </p><br><br><br><br><br>
+        <div id="page">
+            <div th:replace="fragments/navbar :: navbar"></div>
+            <div class="container">
+                <br><h1>About Me</h1><hr/><br>
+                <div class="row">
+                    <div class="col-lg-4 mb-4">
+                        <img th:src="@{/images/abd612-profile-photo.jpg}" class="rounded img-fluid" alt="profile-photo" style="width:300px;">
+                    </div>
+                    <div class="col-lg-8 mb-4">
+                        <p align="justify" style="font-size:120%;">
+                            Hi, my name is <strong>Muhammad Abdullah</strong>.
+                            I am a back-end developer with expertise in Spring Boot, ASP.NET, Microsoft Azure and Azure DevOps.
+                            I have high coding proficiency in Java, C#, Python and C.
+                            I have worked extensively with the latest databases including MS SQL, MySQL, MongoDB and Azure Cosmos DB.
+                            I also have vast experience in creating numerous microservices and REST APIs.
+                            I am currently working at a leading software company dealing with multiple Fortune 500 clients.<br><br>
+                            <a class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer" th:href="@{${creditLink}}" role="button">GitHub: @abd612</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div th:replace="fragments/footer :: footer"></div>
         </div>
-        <div th:replace="fragments/footer :: footer"></div>
     </body>
 
 </html>

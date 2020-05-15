@@ -5,31 +5,59 @@
     <head>
         <title>Coronavirus Report - Country-Wise Stats</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"> </script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <style>
+            #page {
+                position: relative;
+                min-height: 100vh;
+            }
+
+            .container {
+                padding-bottom: 2.5rem;
+            }
+
+            #footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 2.5rem;
+            }
+        </style>
     </head>
 
     <body>
-        <div th:replace="fragments/navbar :: navbar"></div>
-        <div class="container">
-            <br><h1>Country-Wise Stats</h1><br>
-            <table class="table">
-                <tr>
-                    <th>Country</th>
-                    <th>Confirmed</th>
-                    <th>Deaths</th>
-                    <th>Recovered</th>
-                    <th>Active</th>
-                </tr>
-                <tr th:each="dailyReportEntry : ${aggregatedDailyReportEntries}">
-                    <td th:text="${dailyReportEntry.country}">nil</td>
-                    <td th:text="${dailyReportEntry.confirmed}">-</td>
-                    <td th:text="${dailyReportEntry.deaths}">-</td>
-                    <td th:text="${dailyReportEntry.recovered}">-</td>
-                    <td th:text="${dailyReportEntry.active}">-</td>
-                </tr>
-            </table>
+        <div id="page">
+            <div th:replace="fragments/navbar :: navbar"></div>
+            <div class="container">
+                <br><h1>Country-Wise Stats</h1><br>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Country</th>
+                            <th>Confirmed</th>
+                            <th>Deaths</th>
+                            <th>Recovered</th>
+                            <th>Active</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="dailyReportEntry : ${aggregatedDailyReportEntries}">
+                            <td th:text="${dailyReportEntry.country}">nil</td>
+                            <td th:text="${dailyReportEntry.confirmed}">-</td>
+                            <td th:text="${dailyReportEntry.deaths}">-</td>
+                            <td th:text="${dailyReportEntry.recovered}">-</td>
+                            <td th:text="${dailyReportEntry.active}">-</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div th:replace="fragments/footer :: footer"></div>
         </div>
-        <div th:replace="fragments/footer :: footer"></div>
     </body>
 
 </html>

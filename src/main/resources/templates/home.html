@@ -5,15 +5,48 @@
     <head>
         <title>Coronavirus Report - Home</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"> </script>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <style>
+            #page {
+                position: relative;
+                min-height: 100vh;
+            }
+
+            .container {
+                padding-bottom: 2.5rem;
+            }
+
+            #footer {
+                position: absolute;
+                bottom: 0;
+                width: 100%;
+                height: 2.5rem;
+            }
+
+            .card {
+                transition: all .2s ease-in-out;
+            }
+
+            .card:hover {
+                transform: scale(1.05);
+                -webkit-box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
+                -moz-box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
+                box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
+            }
+        </style>
     </head>
 
     <body>
-        <div th:replace="fragments/navbar :: navbar"></div>
-        <div class="container">
-            <div th:replace="fragments/text :: text"></div>
-            <div th:replace="fragments/cards-grid :: cards-grid"></div>
-            <div th:replace="fragments/top-table :: top-table"></div>
+        <div id="page">
+            <div th:replace="fragments/navbar :: navbar"></div>
+            <div class="container">
+                <div th:replace="fragments/text :: text"></div>
+                <div th:replace="fragments/cards-grid :: cards-grid"></div>
+                <div th:replace="fragments/top-table :: top-table"></div>
+            </div>
             <div th:replace="fragments/footer :: footer"></div>
         </div>
     </body>

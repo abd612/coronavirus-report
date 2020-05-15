@@ -9,22 +9,28 @@
     <body>
         <div th:fragment="top-table">
             <hr/><br><h2>Top 10 Countries with Most Confirmed Cases</h2><br>
-            <table class="table">
-                <tr>
-                    <th>Country</th>
-                    <th>Confirmed</th>
-                    <th>Deaths</th>
-                    <th>Recovered</th>
-                    <th>Active</th>
-                </tr>
-                <tr th:each="dailyReportEntry : ${topConfirmedDailyReportEntries}">
-                    <td th:text="${dailyReportEntry.country}">nil</td>
-                    <td th:text="${dailyReportEntry.confirmed}">-</td>
-                    <td th:text="${dailyReportEntry.deaths}">-</td>
-                    <td th:text="${dailyReportEntry.recovered}">-</td>
-                    <td th:text="${dailyReportEntry.active}">-</td>
-                </tr>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Country</th>
+                        <th>Confirmed</th>
+                        <th>Deaths</th>
+                        <th>Recovered</th>
+                        <th>Active</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="dailyReportEntry : ${topConfirmedDailyReportEntries}">
+                        <td th:text="${dailyReportEntry.country}">nil</td>
+                        <td th:text="${dailyReportEntry.confirmed}">-</td>
+                        <td th:text="${dailyReportEntry.deaths}">-</td>
+                        <td th:text="${dailyReportEntry.recovered}">-</td>
+                        <td th:text="${dailyReportEntry.active}">-</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </body>
 
