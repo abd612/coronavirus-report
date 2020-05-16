@@ -1,13 +1,16 @@
 package com.projectsbyabd.coronavirusreport.services;
 
+import com.projectsbyabd.coronavirusreport.models.DailyReport;
 import com.projectsbyabd.coronavirusreport.models.DailyReportEntry;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
@@ -19,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -29,10 +33,12 @@ public class DailyReportService {
 
     private static final Logger logger = LoggerFactory.getLogger(DailyReportService.class);
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+    private final SimpleDateFormat dateIdFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
     private List<DailyReportEntry> dailyReportEntries = new ArrayList<>();
     private List<DailyReportEntry> aggregatedDailyReportEntries = new ArrayList<>();
-    private String lastUpdatedTime = "00:00 (UTC)";
+    private Date latestDataDate;
+    private String lastUpdatedTime;
 
     @Value("${useTestData}")
     private boolean useTestData;
@@ -48,50 +54,92 @@ public class DailyReportService {
     private Integer connectTimeout;
     @Value("${readTimeout}")
     private Integer readTimeout;
+    @Autowired
+    private MongoService mongoService;
+    @Autowired
+    private PostgresService postgresService;
 
     @PostConstruct
-    @Scheduled(cron = "${scheduledCron}", zone = "${scheduledZone}")
-    public void getDailyReportData() {
-        String data;
-
+    public void startupFunction() {
         if (useTestData) {
-            data = getTestData();
+            loadTestData();
         } else {
-            data = getLatestData();
+            loadDataFromPostgres();
+            if (dailyReportEntries.isEmpty()) {
+                loadDataFromMongo();
+            }
+            if (dailyReportEntries.isEmpty()) {
+                getLatestDataFromSource();
+            }
         }
-
-        parseData(data);
-
         lastUpdatedTime = String.format("%s at %s (UTC)", dateFormat.format(new Date()), timeFormat.format(new Date()));
         logger.info("Last updated on {}", lastUpdatedTime);
     }
 
-    private String getTestData() {
-        File file = new File(testDataPath);
-        StringBuilder stringBuilder;
+    @Scheduled(cron = "${scheduledCron}", zone = "${scheduledZone}")
+    public void scheduledFunction() {
+        updateDataFromSource();
+        lastUpdatedTime = String.format("%s at %s (UTC)", dateFormat.format(new Date()), timeFormat.format(new Date()));
+        logger.info("Last updated on {}", lastUpdatedTime);
+        updateDataInMongo();
+        updateDataInPostgres();
+    }
 
-        try (Scanner scanner = new Scanner(file)) {
-            stringBuilder = new StringBuilder();
-            while (scanner.hasNextLine()) {
-                stringBuilder.append(scanner.nextLine()).append(System.getProperty("line.separator"));
-            }
-            logger.info("Successfully read test data from file");
-            return stringBuilder.toString();
-        } catch (FileNotFoundException e) {
-            logger.error("Error finding file - Error Message: {}", e.getMessage());
-            return null;
+    public void loadDataFromMongo() {
+        try {
+            DailyReport dailyReport = mongoService.getLatestReport();
+            setDailyReportEntries(dailyReport.getDailyReportEntries());
+            setAggregatedDailyReportEntries();
+            logger.info("Data loaded from Mongo");
         } catch (Exception e) {
-            logger.error("Error reading file - Error Message: {}", e.getMessage());
-            return null;
+            logger.error("Error loading data from Mongo - Error Message: {}", e.getMessage());
         }
     }
 
-    private String getLatestData() {
+    public void updateDataInMongo() {
+        try {
+            dateIdFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            Date date = dateIdFormat.parse(dateIdFormat.format(latestDataDate));
+            DailyReport dailyReport = new DailyReport(dateIdFormat.format(date), date, dailyReportEntries);
+            mongoService.updateReport(dailyReport);
+            logger.info("Data updated in Mongo");
+        } catch (ParseException e) {
+            logger.error("Error parsing date");
+        } catch (Exception e) {
+            logger.error("Error updating data in Mongo - Error Message: {}", e.getMessage());
+        }
+    }
+
+    public void loadDataFromPostgres() {
+        try {
+            setDailyReportEntries(postgresService.getAllEntries());
+            setAggregatedDailyReportEntries();
+            logger.info("Data loaded from Postgres");
+        } catch (Exception e) {
+            logger.error("Error loading data from Postgres - Error Message: {}", e.getMessage());
+        }
+    }
+
+    public void updateDataInPostgres() {
+        postgresService.updateAllEntries(dailyReportEntries);
+    }
+
+    public void loadTestData() {
+        String data = readTestData();
+        parseData(data);
+    }
+
+    public void updateDataFromSource() {
+        String data = getLatestDataFromSource();
+        parseData(data);
+    }
+
+    private String getLatestDataFromSource() {
         RestTemplate restTemplate = new RestTemplate(getClientHttpRequestFactory());
         dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-        for (int i = 0; i < pastDaysToCheck; i++) {
+        for (int i = 1; i <= pastDaysToCheck; i++) {
             for (int j = 0; j < retriesPerDay; j++) {
                 Date date = new Date(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(i));
                 String dateString = dateFormat.format(date);
@@ -101,6 +149,7 @@ public class DailyReportService {
                     ResponseEntity<String> response = restTemplate.getForEntity(dateUrl, String.class);
                     if (response.getStatusCodeValue() == 200) {
                         logger.info("Successfully fetched data for {} (UTC)", dateString);
+                        latestDataDate = date;
                         return response.getBody();
                     }
                 } catch (RestClientResponseException e) {
@@ -114,13 +163,6 @@ public class DailyReportService {
         }
 
         return null;
-    }
-
-    private SimpleClientHttpRequestFactory getClientHttpRequestFactory() {
-        SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
-        clientHttpRequestFactory.setConnectTimeout(connectTimeout);
-        clientHttpRequestFactory.setReadTimeout(readTimeout);
-        return clientHttpRequestFactory;
     }
 
     private void parseData(String rawData) {
@@ -140,10 +182,30 @@ public class DailyReportService {
                 newReportEntries.add(dailyReportEntry);
             }
 
-            dailyReportEntries = newReportEntries;
+            setDailyReportEntries(newReportEntries);
             setAggregatedDailyReportEntries();
         } catch (IOException e) {
             logger.error("Error parsing data - Error Message: {}", e.getMessage());
+        }
+    }
+
+    private String readTestData() {
+        File file = new File(testDataPath);
+        StringBuilder stringBuilder;
+
+        try (Scanner scanner = new Scanner(file)) {
+            stringBuilder = new StringBuilder();
+            while (scanner.hasNextLine()) {
+                stringBuilder.append(scanner.nextLine()).append(System.getProperty("line.separator"));
+            }
+            logger.info("Successfully read test data from file");
+            return stringBuilder.toString();
+        } catch (FileNotFoundException e) {
+            logger.error("Error finding file - Error Message: {}", e.getMessage());
+            return null;
+        } catch (Exception e) {
+            logger.error("Error reading file - Error Message: {}", e.getMessage());
+            return null;
         }
     }
 
@@ -155,6 +217,14 @@ public class DailyReportService {
         return dailyReportEntries;
     }
 
+    public void setDailyReportEntries(List<DailyReportEntry> dailyReportEntries) {
+        this.dailyReportEntries = dailyReportEntries;
+    }
+
+    public List<DailyReportEntry> getAggregatedDailyReportEntries() {
+        return aggregatedDailyReportEntries;
+    }
+
     public void setAggregatedDailyReportEntries() {
         aggregatedDailyReportEntries = dailyReportEntries.stream()
                 .collect(Collectors.groupingBy(DailyReportEntry::getCountry))
@@ -164,10 +234,6 @@ public class DailyReportService {
                 .map(Optional::get)
                 .sorted(Comparator.comparing(DailyReportEntry::getRegionKey))
                 .collect(Collectors.toList());
-    }
-
-    public List<DailyReportEntry> getAggregatedDailyReportEntries() {
-        return aggregatedDailyReportEntries;
     }
 
     public List<DailyReportEntry> getTopConfirmedDailyReportEntries(Integer limit) {
@@ -263,5 +329,12 @@ public class DailyReportService {
             default:
                 return null;
         }
+    }
+
+    private SimpleClientHttpRequestFactory getClientHttpRequestFactory() {
+        SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
+        clientHttpRequestFactory.setConnectTimeout(connectTimeout);
+        clientHttpRequestFactory.setReadTimeout(readTimeout);
+        return clientHttpRequestFactory;
     }
 }

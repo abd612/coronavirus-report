@@ -1,10 +1,13 @@
 package com.projectsbyabd.coronavirusreport.models;
 
-import org.springframework.stereotype.Component;
+import javax.persistence.*;
 
-@Component
+@Entity
+@Table(name = "daily_report")
 public class DailyReportEntry {
 
+    @Id
+    @Column(name = "region_key", unique = true)
     private String regionKey;
     private String country;
     private Integer confirmed;

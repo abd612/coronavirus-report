@@ -4,12 +4,14 @@ import com.projectsbyabd.coronavirusreport.models.DailyReportEntry;
 import com.projectsbyabd.coronavirusreport.services.DailyReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class ApiController {
 
     @Autowired
@@ -93,11 +95,5 @@ public class ApiController {
     @GetMapping("/ping")
     public String ping() {
         return "success";
-    }
-
-    @GetMapping("/updateData")
-    public String updateDate() {
-        dailyReportService.getDailyReportData();
-        return "updated";
     }
 }
