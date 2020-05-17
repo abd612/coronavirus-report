@@ -21,7 +21,23 @@ public class SwaggerConfig {
                 .select()
                 .apis(RequestHandlerSelectors
                         .withClassAnnotation(RestController.class))
-                .paths(PathSelectors.any())
+                .paths(PathSelectors.ant("/api/**"))
+                .build()
+                .apiInfo(new ApiInfoBuilder()
+                        .title("Coronavirus Report API")
+                        .version("1.0.0")
+                        .description("API Documentation for Coronavirus Report")
+                        .build());
+    }
+
+    @Bean
+    public Docket swaggerDocketAdmin() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("coronavirus-report-api-admin")
+                .select()
+                .apis(RequestHandlerSelectors
+                        .withClassAnnotation(RestController.class))
+                .paths(PathSelectors.ant("/admin/**"))
                 .build()
                 .apiInfo(new ApiInfoBuilder()
                         .title("Coronavirus Report API")

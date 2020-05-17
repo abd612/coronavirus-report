@@ -61,6 +61,7 @@ public class DailyReportService {
 
     @PostConstruct
     public void startupFunction() {
+        logger.info("startupFunction()");
         if (useTestData) {
             loadTestData();
         } else {
@@ -78,6 +79,7 @@ public class DailyReportService {
 
     @Scheduled(cron = "${scheduledCron}", zone = "${scheduledZone}")
     public void scheduledFunction() {
+        logger.info("scheduledFunction()");
         updateDataFromSource();
         lastUpdatedTime = String.format("%s at %s (UTC)", dateFormat.format(new Date()), timeFormat.format(new Date()));
         logger.info("Last updated on {}", lastUpdatedTime);

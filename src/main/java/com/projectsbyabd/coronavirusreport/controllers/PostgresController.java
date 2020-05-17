@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/postgres")
+@RequestMapping("/admin/postgres")
 public class PostgresController {
 
     @Autowired
@@ -17,6 +17,11 @@ public class PostgresController {
     @GetMapping("/getAllEntries")
     public List<DailyReportEntry> getAllEntries() {
         return postgresService.getAllEntries();
+    }
+
+    @GetMapping("/getAllEntriesCount")
+    public Integer getAllEntriesCount() {
+        return postgresService.getAllEntries().size();
     }
 
     @GetMapping("/getEntryByRegionKey")
@@ -35,7 +40,7 @@ public class PostgresController {
     }
 
     @DeleteMapping("/deleteEntry")
-    public void deleteEntry(DailyReportEntry dailyReportEntry) {
+    public void deleteEntry(@RequestBody DailyReportEntry dailyReportEntry) {
         postgresService.deleteEntry(dailyReportEntry);
     }
 

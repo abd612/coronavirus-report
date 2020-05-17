@@ -34,10 +34,6 @@ public class PostgresService {
         return postgresRepository.save(dailyReportEntry);
     }
 
-    public void insertAllEntries(List<DailyReportEntry> dailyReportEntries) {
-        postgresRepository.saveAll(dailyReportEntries);
-    }
-
     public DailyReportEntry updateEntry(DailyReportEntry dailyReportEntry) {
         return postgresRepository.save(dailyReportEntry);
     }
@@ -45,7 +41,9 @@ public class PostgresService {
     @Async
     public void updateAllEntries(List<DailyReportEntry> dailyReportEntries) {
         try {
-            logger.info("Started update in Postgres");
+            logger.info("Purging old data in Postgres");
+            postgresRepository.deleteAll();
+            logger.info("Adding new data in Postgres");
             postgresRepository.saveAll(dailyReportEntries);
             logger.info("Data updated in Postgres");
         } catch (Exception e) {
