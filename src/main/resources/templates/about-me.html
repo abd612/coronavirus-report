@@ -27,11 +27,27 @@
             }
 
             .rounded {
+                width: 300px;
+                margin: auto;
+                display: block;
                 transition: all .2s ease-in-out;
             }
 
             .rounded:hover {
                 transform: scale(1.05);
+                -webkit-box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
+                -moz-box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
+                box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
+            }
+
+            .rounded-circle {
+                width: 60px;
+                margin: 5px 5px 5px 5px;
+                transition: all .1s ease-in-out;
+            }
+
+            .rounded-circle:hover {
+                transform: scale(1.1);
                 -webkit-box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
                 -moz-box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
                 box-shadow: -1px 9px 40px -12px rgba(0,0,0,0.75);
@@ -46,18 +62,28 @@
                 <br><h1>About Me</h1><hr/><br>
                 <div class="row">
                     <div class="col-lg-4 mb-4">
-                        <img th:src="@{/images/abd612-profile-photo.jpg}" class="rounded img-fluid" alt="profile-photo" style="width:300px;">
+                        <img th:src="@{/images/abd612-profile-photo.jpg}" class="rounded img-fluid" alt="profile-photo">
                     </div>
                     <div class="col-lg-8 mb-4">
-                        <p align="justify" style="font-size:120%;">
+                        <p align="justify" style="font-size:120%;margin:auto;">
                             Hi, my name is <strong>Muhammad Abdullah</strong>.
                             I am a back-end developer with expertise in Microsoft Azure, Azure DevOps, Spring Boot and ASP.NET Core.
+                            I am currently working at a leading software company dealing with multiple Fortune 500 clients.
                             I have high coding proficiency in Java, C#, Python and C.
                             I have worked extensively with both legacy and latest databases including MS SQL, MySQL, PostgreSQL, MongoDB and Azure Cosmos DB.
                             I have vast experience in creating numerous web applications, microservices and REST APIs.
-                            I am currently working at a leading software company dealing with multiple Fortune 500 clients.<br><br>
-                            <a class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer" th:href="@{${creditLink}}" role="button">@abd612</a>
+                            If you’d like to get in touch, feel free to say hello through any of the social links below.<br><br>
                         </p>
+                        <div align="center">
+                            <a target="_blank" rel="noopener noreferrer" href="mailto:abdullah612@outlook.com"><img th:src="@{/images/email-icon.png}" class="rounded-circle img-fluid"></a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://fiverr.com/servicesbyabd"><img th:src="@{/images/fiverr-icon.png}" class="rounded-circle img-fluid"></a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://freelancer.com/u/servicesbyabd"><img th:src="@{/images/freelancer-icon.png}" class="rounded-circle img-fluid"></a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://upwork.com/fl/~018c66b2b24fe1d836"><img th:src="@{/images/upwork-icon.png}" class="rounded-circle img-fluid"></a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://linkedin.com/in/abd612"><img th:src="@{/images/linkedin-icon.png}" class="rounded-circle img-fluid"></a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://github.com/abd612"><img th:src="@{/images/github-icon.png}" class="rounded-circle img-fluid"></a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://behance.net/abd612"><img th:src="@{/images/behance-icon.png}" class="rounded-circle img-fluid"></a>
+                            <a target="_blank" rel="noopener noreferrer" href="https://about.me/abd612"><img th:src="@{/images/aboutme-icon.png}" class="rounded-circle img-fluid"></a>
+                        </div>
                     </div>
                 </div>
             </div>
