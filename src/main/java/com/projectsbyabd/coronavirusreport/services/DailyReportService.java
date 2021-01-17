@@ -176,10 +176,10 @@ public class DailyReportService {
             for (CSVRecord record : records) {
                 String regionKey = record.get("Combined_Key");
                 String country = record.get("Country_Region");
-                Integer confirmed = Integer.parseInt(record.get("Confirmed"));
-                Integer deaths = Integer.parseInt(record.get("Deaths"));
-                Integer recovered = Integer.parseInt(record.get("Recovered"));
-                Integer active = Integer.parseInt(record.get("Active"));
+                Integer confirmed = Integer.parseInt(record.get("Confirmed").equals("") ? "0" : record.get("Confirmed"));
+                Integer deaths = Integer.parseInt(record.get("Deaths").equals("") ? "0" : record.get("Deaths"));
+                Integer recovered = Integer.parseInt(record.get("Recovered").equals("") ? "0" : record.get("Recovered"));
+                Integer active = Integer.parseInt(record.get("Active").equals("") ? "0" : record.get("Active"));
                 DailyReportEntry dailyReportEntry = new DailyReportEntry(regionKey, country, confirmed, deaths, recovered, active);
                 newReportEntries.add(dailyReportEntry);
             }
