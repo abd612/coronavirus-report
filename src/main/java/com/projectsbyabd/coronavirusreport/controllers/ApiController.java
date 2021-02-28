@@ -94,6 +94,6 @@ public class ApiController {
 
     @GetMapping("/ping")
     public String ping() {
-        return "success";
+        return "{\"success\": true}";
     }
 }
