@@ -62,6 +62,11 @@ public class DailyReportService {
     @PostConstruct
     public void startupFunction() {
         logger.info("startupFunction()");
+
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        dateIdFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         if (useTestData) {
             loadTestData();
         } else {
@@ -70,21 +75,19 @@ public class DailyReportService {
                 loadDataFromMongo();
             }
             if (dailyReportEntries.isEmpty()) {
-                getLatestDataFromSource();
+                scheduledFunction();
             }
         }
-        lastUpdatedTime = String.format("%s at %s (UTC)", dateFormat.format(new Date()), timeFormat.format(new Date()));
-        logger.info("Last updated on {}", lastUpdatedTime);
     }
 
     @Scheduled(cron = "${scheduledCron}", zone = "${scheduledZone}")
     public void scheduledFunction() {
         logger.info("scheduledFunction()");
         updateDataFromSource();
-        lastUpdatedTime = String.format("%s at %s (UTC)", dateFormat.format(new Date()), timeFormat.format(new Date()));
-        logger.info("Last updated on {}", lastUpdatedTime);
         updateDataInMongo();
         updateDataInPostgres();
+        lastUpdatedTime = String.format("%s at %s (UTC)", dateIdFormat.format(new Date()), timeFormat.format(new Date()));
+        logger.info("Last updated on {}", lastUpdatedTime);
     }
 
     public void loadDataFromMongo() {
@@ -100,7 +103,6 @@ public class DailyReportService {
 
     public void updateDataInMongo() {
         try {
-            dateIdFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             Date date = dateIdFormat.parse(dateIdFormat.format(latestDataDate));
             DailyReport dailyReport = new DailyReport(dateIdFormat.format(date), date, dailyReportEntries);
             mongoService.updateReport(dailyReport);
@@ -138,8 +140,6 @@ public class DailyReportService {
 
     private String getLatestDataFromSource() {
         RestTemplate restTemplate = new RestTemplate(getClientHttpRequestFactory());
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         for (int i = 1; i <= pastDaysToCheck; i++) {
             for (int j = 0; j < retriesPerDay; j++) {
